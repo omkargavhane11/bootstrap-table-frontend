@@ -10,7 +10,7 @@ import { Alert } from "react-bootstrap";
 
 const Main = () => {
   // API url
-  const API = "http://localhost:8080";
+  const API = "https://companyconnect.herokuapp.com";
   //
   const [data, setData] = useState([]);
   const [filterData, setFilterData] = useState([]);
