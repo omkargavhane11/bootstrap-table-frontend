@@ -215,14 +215,15 @@ const Main = () => {
     if (searchInput.length === 0 || null) {
       setFilterData(updatedData);
     } else {
-      updatedData = updatedData.filter((item) => {
-        item.name.toLowerCase().includes(searchInput.toLowerCase()) ||
+      updatedData = updatedData.filter(
+        (item) =>
+          item.name.toLowerCase().includes(searchInput.toLowerCase()) ||
           item.description.toLowerCase().includes(searchInput.toLowerCase()) ||
           item.number.includes(searchInput.toLowerCase()) ||
           item.email.toLowerCase().includes(searchInput.toLowerCase()) ||
           item.state.toLowerCase().includes(searchInput.toLowerCase()) ||
-          item.city.toLowerCase().includes(searchInput.toLowerCase());
-      });
+          item.city.toLowerCase().includes(searchInput.toLowerCase())
+      );
     }
 
     // pagination filter
