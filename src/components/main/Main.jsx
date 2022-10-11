@@ -1,9 +1,6 @@
 import "./main.css";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import BootstrapTable from "react-bootstrap-table-next";
-import paginationFactory from "react-bootstrap-table2-paginator";
-import filterFactory from "react-bootstrap-table2-filter";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { Alert } from "react-bootstrap";
@@ -127,6 +124,13 @@ const Main = () => {
           setData(temp);
           setFilterData(temp);
           setEditOpen(false);
+          setName("");
+          setDescription("");
+          setEmail("");
+          setNumber("");
+          setLogo("");
+          setState("");
+          setCity("");
         } else {
           alert("Failed to update data");
         }
@@ -135,6 +139,13 @@ const Main = () => {
       }
     } catch (error) {
       console.log(error.message);
+      setName("");
+      setDescription("");
+      setEmail("");
+      setNumber("");
+      setLogo("");
+      setState("");
+      setCity("");
     }
   };
 
@@ -193,12 +204,16 @@ const Main = () => {
     setDescription("");
     setEmail("");
     setNumber("");
+    setLogo("");
+    setState("");
+    setCity("");
   };
 
-  const handleFilter = () => {
+  const handleFilter = (pagenumber) => {
     let updatedData = data;
 
-    if (searchInput.length === 0) {
+    // search input filter
+    if (searchInput.length === 0 || null) {
       setFilterData(updatedData);
     } else {
       updatedData = updatedData.filter((item) => {
@@ -212,9 +227,17 @@ const Main = () => {
 
         if (master.includes(searchInput.toLowerCase())) return item;
       });
-      setFilterData(updatedData);
-      console.log(updatedData);
     }
+
+    // pagination filter
+    if (pagenumber) {
+      setCurrentPage(pagenumber);
+      updatedData = updatedData.slice(5 * (currentPage - 1), 5 * currentPage);
+    } else {
+      updatedData = updatedData.slice(5 * (currentPage - 1), 5 * currentPage);
+    }
+    console.log(updatedData);
+    setFilterData(updatedData);
   };
 
   useEffect(() => {
@@ -225,89 +248,16 @@ const Main = () => {
       setFilterData(data.data);
     }
     getData();
+    handleFilter();
   }, []);
 
-  function formatter(column, colIndex, { sortElement, filterElement }) {
-    return (
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        {filterElement}
-        {column.text}
-        {sortElement}
-      </div>
-    );
+  // pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const pages = Math.ceil(data.length / 5);
+  const page = [];
+  for (let i = 0; i < pages; i++) {
+    page.push(i + 1);
   }
-
-  const columns = [
-    {
-      dataField: "name",
-      text: "Name",
-      sort: true,
-    },
-    {
-      dataField: "description",
-      text: "Description",
-      sort: true,
-    },
-    {
-      dataField: "email",
-      text: "Email",
-      sort: true,
-    },
-    {
-      dataField: "number",
-      text: "Number",
-      sort: true,
-    },
-    {
-      dataField: "logo",
-      text: "Logo",
-      formatter: (cellContent, row) => {
-        return <img src={row.logo} alt="logo" className="logo" />;
-        return null;
-      },
-    },
-    {
-      dataField: "state",
-      text: "State",
-      sort: true,
-    },
-    {
-      dataField: "city",
-      text: "City",
-      sort: true,
-    },
-    {
-      text: "Options",
-      // Cell: (cell) => return <button title="edit">Edit</button>,
-      formatter: (cellContent, row) => {
-        return (
-          <div className="column-options">
-            <button
-              className="btn btn-secondary btn-sm"
-              onClick={() => {
-                setEditOpen(true);
-                handleToBeEdited(row);
-                console.log(row);
-              }}
-            >
-              Edit
-            </button>
-            <button
-              className="btn btn-danger btn-sm"
-              onClick={() => handleDelete(row)}
-            >
-              Delete
-            </button>
-          </div>
-        );
-        return null;
-      },
-    },
-  ];
-
-  const options = {
-    sizePerPage: 5,
-  };
 
   return (
     <div className="main">
@@ -523,13 +473,20 @@ const Main = () => {
               </Form.Group>
 
               <Button variant="success" className="submit" onClick={handleEdit}>
-                Submit
+                Save
               </Button>
               <Button
                 variant="secondary"
                 onClick={() => {
                   setEditOpen(false);
                   setShow(false);
+                  setName("");
+                  setDescription("");
+                  setEmail("");
+                  setNumber("");
+                  setLogo("");
+                  setState("");
+                  setCity("");
                 }}
               >
                 Cancel
@@ -561,18 +518,80 @@ const Main = () => {
             />
           </Form>
         </div>
+
         <div className="main-table-wrapper">
-          <BootstrapTable
-            keyField="_id"
-            columns={columns}
-            data={filterData}
-            striped
-            hover
-            condensed
-            pagination={paginationFactory(options)}
-            filter={filterFactory()}
-          />
+          {/* <div className="results">
+            Showing {currentPage}-{currentPage + 4} of {filterData.length}
+          </div> */}
+          <table className="table table-striped">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Email</th>
+                <th>Number</th>
+                <th>Logo</th>
+                <th>State</th>
+                <th>City</th>
+                <th>Options</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filterData.map((t) => (
+                <tr key={t._id}>
+                  <td>{t.name}</td>
+                  <td>{t.description}</td>
+                  <td>{t.email}</td>
+                  <td>{t.number}</td>
+                  <td>
+                    <img className="logo" src={t.logo} />
+                  </td>
+                  <td>{t.state}</td>
+                  <td>{t.city}</td>
+                  <td>
+                    <div className="options">
+                      <button
+                        className="btn btn-secondary btn-sm"
+                        onClick={() => {
+                          setEditOpen(true);
+                          handleToBeEdited(t);
+                          console.log(t);
+                        }}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="btn btn-danger btn-sm"
+                        onClick={() => handleDelete(t)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
+        {/* {data.length >= 5 && ( */}
+        <div className="pagination d-flex justify-content-center">
+          <nav aria-label="Page navigation example">
+            <ul className="pagination">
+              {page.map((p) => (
+                <li
+                  key={p}
+                  className="page-item page-link"
+                  onClick={() => {
+                    handleFilter(p);
+                  }}
+                >
+                  {p}
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </div>
+        {/* )} */}
       </div>
     </div>
   );
