@@ -190,6 +190,13 @@ const Main = () => {
         }
         setOpen(false);
         setShow(false);
+        setName("");
+        setDescription("");
+        setEmail("");
+        setNumber("");
+        setLogo("");
+        setState("");
+        setCity("");
       } else {
         setAlertMsg("Fill all required fields");
         setShow(true);
@@ -199,14 +206,6 @@ const Main = () => {
       setOpen(false);
       setShow(false);
     }
-
-    setName("");
-    setDescription("");
-    setEmail("");
-    setNumber("");
-    setLogo("");
-    setState("");
-    setCity("");
   };
 
   const handleFilter = (pagenumber) => {
@@ -217,15 +216,12 @@ const Main = () => {
       setFilterData(updatedData);
     } else {
       updatedData = updatedData.filter((item) => {
-        let master =
-          item.name.toLowerCase() +
-          item.description.toLowerCase() +
-          item.number +
-          item.email.toLowerCase() +
-          item.state.toLowerCase() +
-          item.city.toLowerCase();
-
-        if (master.includes(searchInput.toLowerCase())) return item;
+        item.name.toLowerCase().includes(searchInput.toLowerCase()) ||
+          item.description.toLowerCase().includes(searchInput.toLowerCase()) ||
+          item.number.includes(searchInput.toLowerCase()) ||
+          item.email.toLowerCase().includes(searchInput.toLowerCase()) ||
+          item.state.toLowerCase().includes(searchInput.toLowerCase()) ||
+          item.city.toLowerCase().includes(searchInput.toLowerCase());
       });
     }
 
@@ -249,6 +245,7 @@ const Main = () => {
     }
     getData();
     handleFilter();
+    // eslint-disable-next-line
   }, []);
 
   // pagination
@@ -544,7 +541,7 @@ const Main = () => {
                   <td>{t.email}</td>
                   <td>{t.number}</td>
                   <td>
-                    <img className="logo" src={t.logo} />
+                    <img className="logo" src={t.logo} alt="logo" />
                   </td>
                   <td>{t.state}</td>
                   <td>{t.city}</td>
